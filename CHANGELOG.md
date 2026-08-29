@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://book.async.rs/overview
 
 ## [Unreleased]
 
+### Fixed
+- **`Client::execute` bypassed authentication on its final result fetch.** It ended by re-fetching the last page with a bare GET that skipped the shared request pipeline, so the request carried no `Authorization` (for any `Auth` variant), `X-Trino-User` or `User-Agent`, and got neither the `RetryPolicy` nor the OAuth2 `401`-challenge retry. `execute` therefore failed against any authenticated coordinator — as a misleading `Error::HttpError("error decoding response body")` rather than `Error::HttpNotOk`, and only after the statement had run — while `get_all` / `stream` succeeded on the same client. It now reports the last page of its own pagination loop
+- `Client::execute` no longer returns `Error::InternalError("No next URI available for execution result")` when the first response carries no `next_uri`
+
+### Changed
+- `Client::execute` makes one HTTP request fewer: the final page is read from its pagination loop instead of being re-fetched
+
+### Deprecated
+- `error::TrinoRetryResult` and `error::TrinoStats` — unused, still `pub` (so not a breaking change), removal planned for the next major release
+
 ## [0.12.0] - 2026-08-19
 
 > Upgrading from 0.11.x? See the [migration guide](MIGRATION.md).

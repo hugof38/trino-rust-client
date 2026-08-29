@@ -78,6 +78,13 @@ impl From<QueryError> for Error {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
+/// Unused since [`Client::execute`](crate::client::Client::execute) stopped
+/// re-fetching the page its pagination loop had already read.
+#[allow(deprecated)] // for the `stats` field below
+#[deprecated(
+    note = "unused; `Client::execute` reports the last `QueryResult` of its pagination loop. \
+            Scheduled for removal in the next major release."
+)]
 #[derive(Debug, Deserialize)]
 pub struct TrinoRetryResult {
     pub id: String,
@@ -91,6 +98,10 @@ pub struct TrinoRetryResult {
     pub update_count: Option<u64>,
 }
 
+/// The `stats` of a [`TrinoRetryResult`].
+#[deprecated(
+    note = "unused, alongside `TrinoRetryResult`. Scheduled for removal in the next major release."
+)]
 #[derive(Debug, Deserialize)]
 pub struct TrinoStats {
     pub state: String,
